@@ -1,17 +1,17 @@
 ## CICD Working:
-### Developer Pushes Code to Cloud Source Repository
+### 1.Developer Pushes Code to Cloud Source Repository
 ![source repos](https://github.com/mejuhi/honest-food-company/blob/master/images/Untitled.png)
 
-### This will trigger Cloud Build Pipeline for Continuous integration which have been set to run on git push
+### 2.This will trigger Cloud Build Pipeline for Continuous integration which have been set to run on git push
 ![tiggers](https://github.com/mejuhi/honest-food-company/blob/master/images/3_pushtobranchtrigger.png)
 
-### You can check the build status to check your deployment
+### 3.You can check the build status to check your deployment
 ![build](https://github.com/mejuhi/honest-food-company/blob/master/images/buildstatus2.png)
 
-### Verify if all CICD Builds have completed
+### 4.Verify if all CICD Builds have completed
 ![build](https://github.com/mejuhi/honest-food-company/blob/master/images/buildstatus.png)
 
-### Verify if your kubernetes services have deployed
+### 5.Verify if your kubernetes services have deployed
 ![build](https://github.com/mejuhi/honest-food-company/blob/master/images/2Untitled.png)
 
 
