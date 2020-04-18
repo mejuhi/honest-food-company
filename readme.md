@@ -1,8 +1,15 @@
 ## CICD Working:
-1.Developer Pushes Code to Cloud Source Repository
+### Developer Pushes Code to Cloud Source Repository
 ![source repos](https://github.com/mejuhi/honest-food-company/blob/master/images/Untitled.png)
-2.This will trigger Cloud Build Pipeline for Continuous integration
-2.1 Here we install npm, build container image, push to container registry.
+
+### This will trigger Cloud Build Pipeline for Continuous integration which have been set to run on git push
+![tiggers](https://github.com/mejuhi/honest-food-company/blob/master/images/3_pushtobranchtrigger.png)
+
+### You can check the build status to check your deployment
+![build](https://github.com/mejuhi/honest-food-company/blob/master/images/buildstatus.png)
+
+
+### Here we install npm, build container image, push to container registry.
 
 
 ## Steps for creating  CICD Infrastructure
