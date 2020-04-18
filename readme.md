@@ -11,8 +11,6 @@
 ### Verify if your kubernetes services have deployed
 ![build](https://github.com/mejuhi/honest-food-company/blob/master/images/2Untitled.png)
 
-### Here we install npm, build container image, push to container registry.
-
 
 ## Steps for creating  CICD Infrastructure
 #### 1. Enable services
