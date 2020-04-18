@@ -1,4 +1,107 @@
-## 1. Create a Kubernetes cluster which runs a node.js service. You can use any “hello world” node.js service.
+## Steps for creating  CICD Infrastructure
+#### 1. Enable services
+```
+gcloud services enable container.googleapis.com \
+cloudbuild.googleapis.com \
+sourcerepo.googleapis.com \
+containeranalysis.googleapis.com
+```
+
+#### 2. Create GKE
+```
+gcloud container clusters create demo-cloudbuild --num-nodes 1 --zone asia-southeast1
+```
+
+#### 3. Create repo
+```
+gcloud source repos create demo-app
+```
+
+#### 3.  clone the repo
+```
+cd ~
+git clone https://github.com/mejuhi/honest-food-company.git \
+demo-app
+```
+
+#### 4. Create remote
+```
+cd ~/demo-app
+PROJECT_ID=$(gcloud config get-value project)
+git remote add google https://source.developers.google.com/p/${PROJECT_ID}/r/demo-app
+```
+
+#### 5. Submit cloudbuild job 
+```
+cd ~/demo-app
+COMMIT_ID="$(git rev-parse --short=7 HEAD)"
+gcloud builds submit --tag="gcr.io/${PROJECT_ID}/demo-cicd:${COMMIT_ID}" .
+```
+
+#### 6.  push the code
+```
+git push google master
+```
+
+#### 7. Create roles
+```
+PROJECT_ID=$(gcloud config get-value project)
+
+PROJECT_NUMBER="$(gcloud projects describe ${PROJECT_ID} --format='get(projectNumber)')"
+gcloud projects add-iam-policy-binding ${PROJECT_NUMBER} \
+   --member=serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
+   --role=roles/container.developer
+```
+
+#### 8. If any changes to be made then use following cmd
+```
+git commit -a -m "removed test"
+git push google master
+```
+
+#### 9. change username creds
+```
+git config --global user.email "juhigupta996@gmail.com"
+git config --global user.name "juhi"
+```
+
+#### 10. Another repo for development
+```
+gcloud source repos create demo-env
+```
+
+#### 11. clone the repo for nother env
+```
+cd ~
+gcloud source repos clone demo-env
+cd ~/demo-env
+git checkout -b production
+```
+
+#### 12. Copy file, for diff env 
+```
+cd ~/demo-env
+cp ~/demo-app/cloudbuild-delivery.yml ~/demo-env/cloudbuild.yml
+git add .
+git commit -m "Create cloudbuild.yml for deployment"
+````
+#### 13. checkout and push
+```
+git checkout -b candidate
+git push origin production
+git push origin candidate
+```
+
+#### 14. Push the changes
+```
+cd ~/demo-app
+git add .
+git commit -m "Trigger CD pipeline"
+git push google master
+```
+
+
+## Steps for creating it using manual configuration
 
 ### Step 1: Creating docker image for the hello-world node js app:
 
@@ -104,6 +207,40 @@ gcloud beta container --project "honestfoodcompany-274609" clusters create "hone
 gcloud container clusters get-credentials honestfoodcompanyassignement --zone us-central1-c --project honestfoodcompany-274609
 ```
 
+### Step 5: Setup Ambassador
+```
+kubectl apply -f https://www.getambassador.io/yaml/aes-crds.yaml && \
+kubectl wait --for condition=established --timeout=90s crd -lproduct=aes && \
+kubectl apply -f https://www.getambassador.io/yaml/aes.yaml && \
+kubectl -n ambassador wait --for condition=available --timeout=90s deploy -lproduct=aes
+
+# Note down the public  ip address to connect to ambassador
+kubectl get -n ambassador service ambassador -o "go-template={{range .status.loadBalancer.ingress}}{{or .ip .hostname}}{{end}}"
+```
+
+```
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -subj '/CN=ambassador-cert' -nodes
+kubectl create secret tls tls-cert --cert=cert.pem --key=key.pem
+cat <<EOF >> wildcard-host.yaml
+---
+apiVersion: getambassador.io/v2
+kind: Host
+metadata:
+  name: wildcard-host
+spec:
+  hostname: "*"
+  acmeProvider:
+    authority: none
+  tlsSecret:
+    name: tls-cert
+  selector:
+    matchLabels:
+      hostname: wildcard-host
+EOF
+kubectl apply -f wildcard-host.yaml
+```
+
+
 ### Step 4: Create deployment and service for hello world app on GKE
 ```
 cd .. 
@@ -153,14 +290,34 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8080
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: hello-backend
+  namespace: ambassador
+spec:
+  prefix: /hello/
+  service: helloworld-service
 EOF
 
-
-kubectl apply -f hello-app.yaml -n honestfoodcompany
+kubectl apply -f hello-app.yaml -n ambassador
 ```
 
-## 2 With your results from 1.: either implement (in Kubernetes) or describe:
-## 2.a. How do you make the service scalable?
+Step 5: Check the node js service
+```
+https://<ambassador-publicIp>/hello/
+#Example
+https://146.148.44.155/hello/
 ```
 
-```
+
+
+
+
+
+
+
+
+
+
