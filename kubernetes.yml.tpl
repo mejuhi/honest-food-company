@@ -33,6 +33,13 @@ spec:
         image: gcr.io/GOOGLE_CLOUD_PROJECT/demo-cicd:COMMIT_SHA
         ports:
         - containerPort: 8080
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
 ---
 kind: Service
 apiVersion: v1
