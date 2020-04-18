@@ -6,7 +6,7 @@
 ![tiggers](https://github.com/mejuhi/honest-food-company/blob/master/images/3_pushtobranchtrigger.png)
 
 ### You can check the build status to check your deployment
-![build](https://github.com/mejuhi/honest-food-company/blob/master/images/buildstatus.png)
+![build](https://github.com/mejuhi/honest-food-company/blob/master/images/buildstatus2.png)
 
 ### Verify if all CICD Builds have completed
 ![build](https://github.com/mejuhi/honest-food-company/blob/master/images/buildstatus.png)
